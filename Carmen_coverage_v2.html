@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coverage Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .inputs { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .inputs input { width: 48%; padding: 5px; }
+        #map { height: 600px; }
+        #providers { margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 8px; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Coverage Map</h1>
+    <div class="inputs">
+        <input type="text" id="coordinates" placeholder="Coordinate (lat, long)">
+        <input type="text" id="address" placeholder="Street number, Street name, Suburb, City, Province">
+    </div>
+    <button id="search-button">Search Coverage</button>
+    <div id="map"></div>
+    <p id="result"></p>
+    <div id="providers"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([-25.7479, 28.2293], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker = L.marker([-25.7479, 28.2293]).addTo(map);
+
+        // Function to handle coverage search
+        async function searchCoverage(lat, lng, address) {
+            try {
+                const response = await fetch('/check-coverage', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ latitude: lat, longitude: lng, address })
+                });
+                const data = await response.json();
+                document.getElementById('result').innerText = data.message;
+
+                if (data.message.includes('covered')) {
+                    map.setView([lat, lng], 13);
+                    marker.setLatLng([lat, lng]);
+
+                    // Displaying provider and product details
+                    const providersDiv = document.getElementById('providers');
+                    providersDiv.innerHTML = `<table>
+                        <thead>
+                            <tr><th>Provider</th><th>Product</th><th>Price</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody>
+                            ${data.providers.map(provider => `
+                                <tr>
+                                    <td>${provider.provider}</td>
+                                    <td>${provider.product}</td>
+                                    <td>${provider.price}</td>
+                                    <td>
+                                        <button onclick="showMore('${provider.provider}')">Show More Packages</button>
+                                        <button onclick="selectPackage('${provider.provider}', '${provider.product}')">Select Package</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>`;
+                } else {
+                    document.getElementById('providers').innerHTML = '';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = 'Error checking coverage.';
+            }
+        }
+
+        // Handlers for the buttons
+        function showMore(provider) {
+            alert(`Showing more packages for ${provider}`);
+        }
+
+        function selectPackage(provider, product) {
+            alert(`Selected package: ${provider} - ${product}`);
+        }
+
+        // Search button click event
+        document.getElementById('search-button').addEventListener('click', function() {
+            const coordsInput = document.getElementById('coordinates').value.split(',');
+            const addressInput = document.getElementById('address').value;
+
+            if (coordsInput.length == 2) {
+                const lat = parseFloat(coordsInput[0]);
+                const lng = parseFloat(coordsInput[1]);
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    searchCoverage(lat, lng, addressInput);
+                } else {
+                    document.getElementById('result').innerText = 'Invalid coordinates.';
+                }
+            } else {
+                document.getElementById('result').innerText = 'Please enter valid coordinates.';
+            }
+        });
+    </script>
+</body>
+</html>
