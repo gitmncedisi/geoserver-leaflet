@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Carmen Coverage</title>
+        <link rel="stylesheet" href="Carmen%20Coverage_files/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+        
+        <script src="Carmen%20Coverage_files/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        
+            <title>Leaflet geoserver request</title>
+        <link rel="stylesheet" href="Carmen%20Coverage_files/carmen_v4.1.css"> <!-- Linking the CSS file -->
+    <!-- Code injected by Five-server -->
+  <script async="" data-id="five-server" data-file="c:\Users\McediseS\Documents\Leaflet_rendering\Geoserver on Leaflet\.vscode\carmen_v3.app\carmen_v4.1.js\leaflet\carmen_v4.1.html" type="application/javascript" src="Carmen%20Coverage_files/fiveserver.js"></script>
+  <style>      
+      /* Injected by five-server */
+      /*[data-highlight="true"] {
+        border: 1px rgb(90,170,255) solid !important;
+        background-color: rgba(155,215,255,0.5);
+        animation: fadeOutHighlight 1s forwards 0.5s;
+      }
+      img[data-highlight="true"] {
+        filter: sepia(100%) hue-rotate(180deg) saturate(200%);
+        animation: fadeOutHighlightIMG 0.5s forwards 0.5s;
+      }*/
+      @keyframes fadeOutHighlight {
+        from {background-color: rgba(155,215,255,0.5);}
+        to {background-color: rgba(155,215,255,0);}
+      }      
+      @keyframes fadeOutHighlightIMG {
+        0% {filter: sepia(100%) hue-rotate(180deg) saturate(200%);}
+        33% {filter: sepia(66%) hue-rotate(180deg) saturate(100%);}
+        50% {filter: sepia(50%) hue-rotate(90deg) saturate(50%);}
+        66% {filter: sepia(33%) hue-rotate(0deg) saturate(100%);}
+        100% {filter: sepia(0%) hue-rotate(0deg) saturate(100%);}
+      }
+      @keyframes fiveserverInfoPopup {
+        0%   {top:-40px;}
+        15%  {top:4px;}
+        85%  {top:4px;}
+        100% {top:-40px;}
+      }
+      /*smaller*/
+      @media (max-width: 640px) {
+        #fiveserver-info-wrapper {
+          max-width: 98%;
+        }
+        #fiveserver-info {
+          border-radius: 0px;
+        }      
+      }
+
+      </style></head>
+<body>
+    <div class="main-container">
+        <!-- Left panel for inputs -->
+        <div class="left-panel">
+            <h2>Coverage Search</h2>
+
+            <!-- Search using Coordinates Checkbox -->
+            <div class="input-row">
+                <label id="coordinate-checkbox-label">
+                    <input type="checkbox" id="coordinate-checkbox" checked="checked"> Search using Coordinates
+                </label>
+                
+            </div>
+
+            <!-- Latitude and Longitude inputs -->
+            <div class="input-row">
+                
+                <input type="text" id="latitude" name="latitude" placeholder="Enter Latitude">
+
+                
+                <input type="text" id="longitude" name="longitude" placeholder="Enter Longitude">
+            </div>
+            <!--search using address-->
+
+           
+            <div style="margin-top: 20px;">
+                <label id="coordinate-checkbox-label">
+                    <input type="checkbox" id="coordinate-checkbox"> Search using Address
+                <br>
+                <input type="text" id="address" name="address" placeholder="Enter Address">
+                
+            </label></div>
+            <!-- Connection Medium Dropdown (Multiple select allowed) -->
+            <label for="medium" style="margin-top: 20px;">Connection Medium:</label>
+            <select id="medium" multiple="multiple">
+                <option value="microwave">Microwave</option>
+                <option value="fibre">Fibre</option>
+                <option value="lte">LTE</option>
+                <option value="5g">5G</option>
+                <option value="4g">4G</option>
+            </select>
+
+            <!-- Search Button -->
+            <button id="searchBtn" class="filter-button">Search</button>
+
+
+            <!-- Results container to display filtered coverage -->
+            <div id="result" class="results-container">
+                <!-- Filtered Results will be shown here -->
+            </div>
+        </div>
+
+        <!-- Right panel for Map -->
+        <div class="right-panel">
+            <div id="map" class="map-container"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript linking -->
+    <script src="Carmen%20Coverage_files/carmen_v4.1.js"></script> <!-- Link to your JS file -->
+
+
+</body></html>

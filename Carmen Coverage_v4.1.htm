@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Carmen Coverage</title>
+        <link rel="stylesheet" href="Carmen%20Coverage_v4.1_files/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+        
+        <script src="Carmen%20Coverage_v4.1_files/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        
+            <title>Leaflet geoserver request</title>
+        <link rel="stylesheet" href="Carmen%20Coverage_v4.1_files/carmen_v4.1.css"> <!-- Linking the CSS file -->
+    </head>
+<body>
+    <div class="main-container">
+        <!-- Left panel for inputs -->
+        <div class="left-panel">
+            <h2>Coverage Search</h2>
+
+            <!-- Search using Coordinates Checkbox -->
+            <div class="input-row">
+                <label id="coordinate-checkbox-label">
+                    <input type="checkbox" id="coordinate-checkbox" checked="checked"> Search using Coordinates
+                </label>
+                
+            </div>
+
+            <!-- Latitude and Longitude inputs -->
+            <div class="input-row">
+                
+                <input type="text" id="latitude" name="latitude" placeholder="Enter Latitude" value="-33.89634733">
+
+                
+                <input type="text" id="longitude" name="longitude" placeholder="Enter Longitude" value="18.62816792">
+            </div>
+            <!--search using address-->
+
+           
+            <div style="margin-top: 20px;">
+                <label id="coordinate-checkbox-label">
+                    <input type="checkbox" id="coordinate-checkbox"> Search using Address
+                <br>
+                <input type="text" id="address" name="address" placeholder="Enter Address" disabled="disabled">
+                
+            </label></div>
+            <!-- Connection Medium Dropdown (Multiple select allowed) -->
+            <label for="medium" style="margin-top: 20px;">Connection Medium:</label>
+            <select id="medium" multiple="multiple">
+                <option value="microwave">Microwave</option>
+                <option value="fibre">Fibre</option>
+                <option value="lte">LTE</option>
+                <option value="5g">5G</option>
+                <option value="4g">4G</option>
+            </select>
+
+            <!-- Search Button -->
+            <button id="searchBtn" class="filter-button">Search</button>
+
+
+            <!-- Results container to display filtered coverage -->
+            <div id="result" class="results-container">
+                <!-- Filtered Results will be shown here -->
+            </div>
+        </div>
+
+        <!-- Right panel for Map -->
+        <div class="right-panel">
+            <div id="map" class="map-container"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript linking -->
+    <script src="Carmen%20Coverage_v4.1_files/carmen_4.3.js"></script> <!-- Link to your JS file -->
+
+
+</body></html>
