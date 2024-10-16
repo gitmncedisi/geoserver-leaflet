@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carmen Coverage</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="carmen_v4.1.css">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Left panel for inputs -->
+        <div class="left-panel">
+            <h2>Coverage Search</h2>
+            <!-- Search using Coordinates Checkbox -->
+            <div class="input-row">
+                <label id="coordinate-checkbox-label">
+                    <input type="checkbox" id="coordinate-checkbox"> Search using Coordinates
+                </label>
+            </div>
+            <!-- Latitude and Longitude inputs -->
+            <div class="input-row">
+                <input type="text" id="latitude" name="latitude" placeholder="Enter Latitude" disabled>
+                <input type="text" id="longitude" name="longitude" placeholder="Enter Longitude" disabled>
+            </div>
+            <!-- Search using Address -->
+            <div style="margin-top: 20px;">
+                <label id="address-checkbox-label">
+                    <input type="checkbox" id="address-checkbox"> Search using Address
+                </label>
+                <input type="text" id="address" name="address" placeholder="Enter Address" disabled>
+            </div>
+            <!-- Connection Medium Dropdown -->
+            <label for="medium" style="margin-top: 20px;">Connection Medium:</label>
+            <select id="medium" multiple>
+                <option value="microwave">Microwave</option>
+                <option value="fibre">Fibre</option>
+                <option value="lte">LTE</option>
+                <option value="5g">5G</option>
+                <option value="4g">4G</option>
+            </select>
+            <!-- Search Button -->
+            <button id="searchBtn" class="filter-button" disabled>Search</button>
+            <!-- Results container to display filtered coverage -->
+            <div id="result" class="results-container">
+                <!-- Filtered Results will be shown here -->
+            </div>
+        </div>
+
+        <!-- Draggable divider between left and right panels -->
+        <div class="draggable-divider"></div>
+
+        <!-- Right panel for Map -->
+        <div class="right-panel">
+            <div id="map" class="map-container"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    
+    <!-- Map Initialization Script -->
+    <script>
+        // Initialize the map at a default location
+        var map = L.map('map').setView([-25.7479, 28.2293], 13);
+
+        // Add the OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add WMS layer from GeoServer
+        L.tileLayer.wms("http://localhost:8080/geoserver/wms", {
+            layers: 'Coverage_map:ec_administrative_registration', // Replace with your workspace:layer name
+            format: 'image/png',
+            transparent: true,
+            attribution: "GeoServer"
+        }).addTo(map);
+
+        // Create a draggable marker
+        var marker = L.marker([-25.7479, 28.2293], { draggable: true }).addTo(map);
+
+        // Add 'dragend' event listener to the marker
+        marker.on('dragend', function (event) {
+            var marker = event.target;
+            var position = marker.getLatLng(); // Get the new position of the marker
+            var lat = position.lat;
+            var lng = position.lng;
+
+            console.log("Marker moved to:", lat, lng);
+
+            // Fly to the new marker location and zoom in
+            map.flyTo([lat, lng], 15);
+
+            // Optional: Call your coverage check function here with the new latitude and longitude
+            checkCoverage(lat, lng);
+        });
+
+        // Function to check coverage
+        async function checkCoverage(lat, lng) {
+            try {
+                var wmsUrl = "http://localhost:8080/geoserver/Coverage_map/wms";
+                var bbox = map.getBounds().toBBoxString();
+                var width = map.getSize().x;
+                var height = map.getSize().y;
+                var point = map.latLngToContainerPoint([lat, lng]);
+                var x = Math.floor(point.x);
+                var y = Math.floor(point.y);
+
+                var params = {
+                    service: "WMS",
+                    version: "1.1.1",
+                    request: "GetFeatureInfo",
+                    layers: "Coverage_map:ec_administrative_registration",  // Replace with your layer name
+                    query_layers: "Coverage_map:ec_administrative_registration",
+                    info_format: "application/json",
+                    srs: "EPSG:4326",
+                    bbox: bbox,
+                    width: width,
+                    height: height,
+                    x: x,
+                    y: y
+                };
+
+                var url = wmsUrl + L.Util.getParamString(params);
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    console.error("Error with GeoServer request. Status:", response.status);
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.features && data.features.length > 0) {
+                    console.log("Coverage available.");
+                    // Handle coverage found logic here
+                } else {
+                    console.log("No coverage found.");
+                    // Handle no coverage logic here
+                }
+            } catch (error) {
+                console.error("Error checking coverage:", error);
+            }
+        }
+    </script>
+
+    <!-- Draggable Divider Script -->
+    <script>
+        const divider = document.querySelector('.draggable-divider');
+        const leftPanel = document.querySelector('.left-panel');
+        const rightPanel = document.querySelector('.right-panel');
+        let isDragging = false;
+
+        divider.addEventListener('mousedown', function () {
+            isDragging = true;
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            if (!isDragging) return;
+
+            let containerWidth = document.querySelector('.main-container').offsetWidth;
+            let leftPanelWidth = e.clientX / containerWidth * 100;
+            let rightPanelWidth = 100 - leftPanelWidth;
+
+            leftPanel.style.width = `${leftPanelWidth}%`;
+            rightPanel.style.width = `${rightPanelWidth}%`;
+        });
+
+        document.addEventListener('mouseup', function () {
+            isDragging = false;
+        });
+    </script>
+</body>
+</html>
